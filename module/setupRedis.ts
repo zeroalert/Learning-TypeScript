@@ -1,42 +1,52 @@
 import { Config } from "@pulumi/pulumi";
 import { pulumi } from "@vizientinc/pulumi";
-import { Redis, listRedisKeysOutput } from "@pulumi/azure-native/cache";
+import * as cache from "@pulumi/azure-native-v2/cache";
 import { AzureBuilder } from "@vizientinc/azure-builder";
 
-export interface RedisConfig {
-  skuName: string;
-  skuFamily: string;
-  skuCapacity: number;
-  enableNonSslPort: boolean;
+export interface RedisEnterpriseConfig {
+  skuName: "Enterprise_E10" | "Enterprise_E20" | "Enterprise_E50" | "Enterprise_E100" | "EnterpriseFlash_F300" | "EnterpriseFlash_F700" | "EnterpriseFlash_F1500";
+  capacity: number;
+  clusteringPolicy?: "EnterpriseCluster" | "OSSCluster";
+  evictionPolicy?: "AllKeysLFU" | "AllKeysLRU" | "AllKeysRandom" | "NoEviction" | "VolatileLFU" | "VolatileLRU" | "VolatileRandom" | "VolatileTTL";
+  port?: number;
 }
 
 export function setupRedis(args: {
   location: string;
   env: string;
-  redisConfig: RedisConfig;
+  redisConfig: RedisEnterpriseConfig;
   azureBuilder: AzureBuilder;
   vnetPrivateLinkSubnet: string;
   redisPrivateDnsZoneId: string;
 }) {
   const config = new Config();
 
-  const redis = new Redis(`atscale-redis-${args.env}`, {
+  // Create Redis Enterprise Cluster
+  const redisCluster = new cache.RedisEnterprise(`atscale-redis-${args.env}`, {
     resourceGroupName: args.azureBuilder.resourceGroupName,
     location: args.location,
     sku: {
       name: args.redisConfig.skuName,
-      family: args.redisConfig.skuFamily,
-      capacity: args.redisConfig.skuCapacity,
+      capacity: args.redisConfig.capacity,
     },
-    enableNonSslPort: args.redisConfig.enableNonSslPort,
     minimumTlsVersion: "1.2",
-    redisVersion: "7.0",
-    publicNetworkAccess: "Disabled",
   });
 
-  const redisKeys = listRedisKeysOutput({
+  // Create Redis Enterprise Database
+  const redisDatabase = new cache.Database(`atscale-redis-db-${args.env}`, {
     resourceGroupName: args.azureBuilder.resourceGroupName,
-    name: redis.name,
+    clusterName: redisCluster.name,
+    clientProtocol: "Encrypted",
+    clusteringPolicy: args.redisConfig.clusteringPolicy ?? "EnterpriseCluster",
+    evictionPolicy: args.redisConfig.evictionPolicy ?? "NoEviction",
+    port: args.redisConfig.port ?? 10000,
+  });
+
+  // Get access keys for the database
+  const redisKeys = cache.listDatabaseKeysOutput({
+    resourceGroupName: args.azureBuilder.resourceGroupName,
+    clusterName: redisCluster.name,
+    databaseName: redisDatabase.name,
   });
 
   const peBuilder = new AzureBuilder({
@@ -52,18 +62,17 @@ export function setupRedis(args: {
   peBuilder.setResourceGroup(config.require("vnetRg"));
   peBuilder.Network.setDefaultVirtualNetwork(config.require("vnet"), config.require("vnetRg"));
 
+  // Private endpoint for Redis Enterprise
   const redisPrivateEndpoint = peBuilder.Network.PrivateEndpoint.ForRedis(
     "atscale-redis-endpoint",
-    redis,
+    redisCluster,
     args.vnetPrivateLinkSubnet
   );
 
+  // Note: DNS zone group resource type for Enterprise differs
   const redisDnsZones = {
-    "microsoft.cache/redis:rediscache": [
-      { name: "privatelink.redis.cache.windows.net", id: args.redisPrivateDnsZoneId },
-    ],
-    "microsoft.cache/redis:rediscachesecondary": [
-      { name: "privatelink.redis.cache.windows.net", id: args.redisPrivateDnsZoneId },
+    "microsoft.cache/redisenterprise:rediscache": [
+      { name: "privatelink.redisenterprise.cache.azure.net", id: args.redisPrivateDnsZoneId },
     ],
   };
 
@@ -73,8 +82,8 @@ export function setupRedis(args: {
     redisDnsZones
   );
 
-  const redisHost = redis.hostName;
-  const redisPort = pulumi.output(6380);
+  const redisHost = redisCluster.hostName;
+  const redisPort = pulumi.output(args.redisConfig.port ?? 10000);
   const redisUser = pulumi.output("");
   const redisPassword = redisKeys.primaryKey;
   const redisSslEnabled = pulumi.output(true);
@@ -82,7 +91,8 @@ export function setupRedis(args: {
   const redisConnectionString = pulumi.interpolate`rediss://${redisHost}:${redisPort}/0?password=${redisPassword}`;
 
   return {
-    redis,
+    redisCluster,
+    redisDatabase,
     redisKeys,
     redisHost,
     redisPort,
