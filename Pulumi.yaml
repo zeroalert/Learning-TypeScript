@@ -1,0 +1,10 @@
+name: dev
+description: this is the bombtastic
+runtime:
+  name: nodejs
+  options:
+    packagemanager: npm
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: azure-typescript
