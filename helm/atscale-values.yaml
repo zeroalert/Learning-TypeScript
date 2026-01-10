@@ -1,0 +1,132 @@
+global:
+  ingressDomain: "atscale.dev.corp.vizientinc.com"
+
+  atscale:
+    # Set the certificate for TLS deployement.
+    # For deployment, include the certificate and key in base64 format.
+    tls:
+      ## @param existingSecret; If empty, the secret will be auto-generated.
+      ## In order to use a custom existingSecret, it is also needed to specify it on atscale-proxy.tls.existingSecret
+      existingSecret: ""
+
+      ## @param tlsCrt; If empty and no existingSecret provided, the certificate will be auto-generated.
+      ## TLS Certificate Base64 encoded.
+      tlsCrt: ""
+
+      ## @param tlsKey; If empty and no existingSecret provided, the key will be auto-generated.
+      ## TLS Key Base64 encoded.
+      tlsKey: ""
+
+      ## @param caCerts; If empty and no existingSecret provided, the CA certificate will be auto-generated.
+      ## CA Certificates Base64 encoded.
+      caCerts: ""
+
+atscale-proxy:
+  service:
+    type: LoadBalancer
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
+postgres:
+  enabled: false
+
+redis:
+  enabled: false
+
+atscale-engine:
+  # Disable SSL peer verification for Azure Redis Enterprise
+  extraEnvVars:
+    - name: ATSCALE_ENGINE_REDIS_SSL_VERIFY_PEER
+      value: "false"
+
+  # Force engine pod to same node as telemetry to share RWO volume
+  affinity:
+    podAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - telemetry
+          topologyKey: kubernetes.io/hostname
+
+  externalDatabase:
+    existingSecret: "atscale-postgres-external"
+    existingSecretHostKey: "host"
+    existingSecretPortKey: "port"
+    existingSecretUserKey: "user"
+    existingSecretPasswordKey: "password"
+    existingSecretDatabaseKey: "database"
+    existingSecretSslEnabledKey: "sslEnabled"
+
+  externalRedis:
+    existingSecret: "engine-redis-external"
+    existingSecretHostKey: "host"
+    existingSecretPortKey: "port"
+    existingSecretUserKey: "user"
+    existingSecretPasswordKey: "password"
+    existingSecretSslEnabledKey: "sslEnabled"
+
+  externalPgwire:
+    existingSecret: "pgwire-postgres-external"
+    existingSecretHostKey: "host"
+    existingSecretPortKey: "port"
+    existingSecretUserKey: "user"
+    existingSecretPasswordKey: "password"
+    existingSecretDatabaseKey: "database"
+
+atscale-api:
+  externalDatabase:
+    existingSecret: "atscale-postgres-external"
+    existingSecretHostKey: "host"
+    existingSecretPortKey: "port"
+    existingSecretUserKey: "user"
+    existingSecretPasswordKey: "password"
+    existingSecretDatabaseKey: "database"
+    existingSecretSslEnabledKey: "sslEnabled"
+
+atscale-entitlement:
+  externalDatabase:
+    existingSecret: "atscale-postgres-external"
+    existingSecretHostKey: "host"
+    existingSecretPortKey: "port"
+    existingSecretUserKey: "user"
+    existingSecretDatabaseKey: "database"
+    existingSecretPasswordKey: "password"
+
+  externalRedis:
+    existingSecret: "engine-redis-external"
+    existingSecretHostKey: "host"
+    existingSecretPortKey: "port"
+    existingSecretUserKey: "user"
+    existingSecretPasswordKey: "password"
+    existingSecretSslEnabledKey: "sslEnabled"
+
+keycloak:
+  externalDatabase:
+    existingSecret: "keycloak-postgres-external"
+    existingSecretHostKey: "host"
+    existingSecretPortKey: "port"
+    existingSecretUserKey: "user"
+    existingSecretDatabaseKey: "database"
+    existingSecretPasswordKey: "password"
+
+atscale-mcp:
+  externalDatabase:
+    existingSecret: "atscale-postgres-external"
+    existingSecretHostKey: "host"
+    existingSecretPortKey: "port"
+    existingSecretUserKey: "user"
+    existingSecretDatabaseKey: "database"
+    existingSecretPasswordKey: "password"
+    existingSecretSslModeKey: "sslMode"
+
+atscale-sml:
+  externalRedis:
+    existingSecret: "engine-redis-external"
+    existingSecretHostKey: "host"
+    existingSecretPortKey: "port"
+    existingSecretUserKey: "user"
+    existingSecretPasswordKey: "password"
+    existingSecretSslEnabledKey: "sslEnabled"
