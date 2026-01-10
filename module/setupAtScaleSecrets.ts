@@ -7,7 +7,7 @@ export interface AtScaleSecretsConfig {
   namespace: pulumi.Input<string>;
 
   postgresHost: pulumi.Input<string>;
-  postgresPort?: number;
+  postgresPort?: pulumi.Input<number>;
 
   atscaleUser: pulumi.Input<string>;
   atscalePassword: pulumi.Input<string>;
@@ -22,7 +22,7 @@ export interface AtScaleSecretsConfig {
   pgwireDbName: pulumi.Input<string>;
 
   redisHost: pulumi.Input<string>;
-  redisPort?: number;
+  redisPort?: pulumi.Input<number>;
   redisUser?: pulumi.Input<string>;
   redisPassword: pulumi.Input<string>;
 }
@@ -35,9 +35,9 @@ export interface AtScaleSecretsResult {
 }
 
 export function setupAtScaleSecrets(config: AtScaleSecretsConfig): AtScaleSecretsResult {
-  const pgPort = config.postgresPort ?? 5432;
-  const redisPort = config.redisPort ?? 6380;
-  const redisUser = config.redisUser ?? "";
+  const pgPort = pulumi.output(config.postgresPort ?? 5432);
+  const redisPort = pulumi.output(config.redisPort ?? 6380);
+  const redisUser = pulumi.output(config.redisUser ?? "");
 
   const atscalePostgresSecret = new k8s.core.v1.Secret(
     "atscale-postgres-external",
@@ -46,7 +46,7 @@ export function setupAtScaleSecrets(config: AtScaleSecretsConfig): AtScaleSecret
       type: "Opaque",
       stringData: {
         host: config.postgresHost,
-        port: pgPort.toString(),
+        port: pgPort.apply(p => p.toString()),
         database: config.atscaleDbName,
         user: "sqladmin",
         password: config.atscalePassword,
@@ -64,7 +64,7 @@ export function setupAtScaleSecrets(config: AtScaleSecretsConfig): AtScaleSecret
       type: "Opaque",
       stringData: {
         host: config.postgresHost,
-        port: pgPort.toString(),
+        port: pgPort.apply(p => p.toString()),
         database: config.keycloakDbName,
         user: "sqladmin",
         password: config.keycloakPassword,
@@ -80,7 +80,7 @@ export function setupAtScaleSecrets(config: AtScaleSecretsConfig): AtScaleSecret
       type: "Opaque",
       stringData: {
         host: config.postgresHost,
-        port: pgPort.toString(),
+        port: pgPort.apply(p => p.toString()),
         database: config.pgwireDbName,
         user: "sqladmin",
         password: config.pgwirePassword,
@@ -96,7 +96,7 @@ export function setupAtScaleSecrets(config: AtScaleSecretsConfig): AtScaleSecret
       type: "Opaque",
       stringData: {
         host: config.redisHost,
-        port: redisPort.toString(),
+        port: redisPort.apply(p => p.toString()),
         user: redisUser,
         password: config.redisPassword,
         sslEnabled: "true",
