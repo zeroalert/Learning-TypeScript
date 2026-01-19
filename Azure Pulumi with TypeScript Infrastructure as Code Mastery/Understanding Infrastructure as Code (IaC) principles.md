@@ -1,0 +1,6 @@
+- IaC operates on several principles that distinguish from traditional 
+- Writing a script that outlines a series of steps to reach a particular configuration (imperative approach), you declare what the infrastructure should look like (declarative approach)
+- Idempotence is a crucial characteristic of IaC operations. An idempotent operation is one that, when applied multiples, produces the same result as if it were applied only once .
+- Version Control and Auditability can be stored into Git which can enable Version History, Rollbacks, Collaboration, Review and Approval
+- IaC primarily focuses on provisioning and orchestrating the underlying infrastructure resources(VMs, networks, databases, load balancers, etc) in the cloud or on-premises. 
+- Configuration Managements Primarily focuses on configuring and managing software within those provisioned resources (e.g., installing packages, starting services, managing files, user accounts) tools like ansible. 
