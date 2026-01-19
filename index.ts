@@ -1,5 +1,7 @@
-import * as pulumi from "@pulumi/pulumi";
+import * as azure from "@pulumi/azure";
 import * as azure_native from "@pulumi/azure-native";
+import { tenantId } from "@pulumi/azure/config";
+import * as pulumi from "@pulumi/pulumi";
 
 // Configuration for our app
 const resourceGroupName = "pulumi-appservice-rg"; // assuming this RG exist
@@ -264,7 +266,7 @@ const appGatewaySubnet = new azure_native.network.Subnet("my-appgw-subnet",{
     resourceGroupName: resourceGroup.name, 
     virtualNetworkName: virtualNetwork.name,
     addressPrefix: "10.1.1.0/24"
-})
+});
 
 // Create the public Ip for appgw
 const publicIpAppgw = new azure_native.network.PublicIPAddress("my-appgw-public-ip",{
@@ -274,7 +276,8 @@ const publicIpAppgw = new azure_native.network.PublicIPAddress("my-appgw-public-
     sku: {
       name: azure_native.network.PublicIPAddressSkuName.Standard,
     },
-})
+});
+
 // Create the application gateway 
 const applicationGateway = new azure_native.network.ApplicationGateway('my-app-gateway',{
     resourceGroupName: resourceGroup.name,
@@ -348,7 +351,34 @@ const applicationGateway = new azure_native.network.ApplicationGateway('my-app-g
     }],
 });
 
+const keyVault = new azure_native.keyvault.Vault("myKeyVault",{
+    resourceGroupName: resourceGroup.name,
+    location: resourceGroup.location,
+    vaultName: "mysecureappkeyvault12345",
+    properties: {
+      sku: {
+          family: "A",
+          name: "standard",
+      },
+      tenantId: "YOUR_AZURE_TENANT_ID",
+      enabledForDeployment: true,
+      enabledForDiskEncryption: true,
+      enabledForTemplateDeployment: true, 
+      accessPolicies: [{
+      tenantId: "YOUR_AZURE_TENANT_ID",
+      objectId: "YOUR_AZURE_TENANT_ID",
+      permissions: {
+          keys: ["get", "list", "create", "delete", "recover", "backup", "restore", "import", "update", "sign", "verify", "encrypt", "decrypt", "wrapKey", "unwrapKey"],
+          secrets: ["get", "list", "set", "delete", "recover", "backup", "restore"],
+          certificates: ["get", "list", "delete", "create", "import", "update", "managecontacts", "manageissuers", "getissuers", "listissuers", "recover", "backup", "restore"],
+      },
+    }],
+    },
+});
 
+
+
+export const keyVaultUri = keyVault.properties.vaultUri;
 export const redisCacheHostname = redisCache.hostName;
 export const redisCachePrimaryConnectionString = redisCache.accessKeys;
 export const cosmosdbAccountName = cosmosdbAccount.name;
