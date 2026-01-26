@@ -222,16 +222,16 @@ Crucially, the `storageAccount` resource's `networkRuleSet` is configured. 
 
 While both Private Endpoints and Service Endpoints secure access to Azure services, their mechanisms and ideal use cases differ significantly.
 
-|Feature|Azure Private Endpoint|Azure Service Endpoint|
-|---|---|---|
-|**Connectivity Model**|Private IP from VNet assigned to service; service appears _within_ VNet.|Extends VNet identity to service; traffic over backbone; service retains public IP.|
-|**IP Address Usage**|Consumes a private IP address from your VNet.|Does not consume private IP addresses from your VNet.|
-|**DNS Resolution**|Requires Private DNS Zone (or custom DNS) to resolve service FQDN to private IP.|Service FQDN resolves to its public IP; no special DNS configuration needed.|
-|**Public Internet Exposure**|Eliminates public internet exposure for the service.|Traffic still uses public IP but travels optimized routes within Azure. Service ACLs control access.|
-|**Data Exfiltration**|Provides strong data exfiltration protection by ensuring traffic stays within VNet.|Offers some exfiltration protection by restricting source networks, but service still has a public IP.|
-|**Management Complexity**|More complex to set up due to Private DNS Zone integration and IP management.|Simpler setup; just enable on subnet and configure service firewall rules.|
-|**Cost**|Incurs costs for the Private Endpoint resource itself.|No direct cost for the Service Endpoint feature; only underlying network traffic costs.|
-|**Cross-Region Access**|Can connect to services in _different regions_ (requires VNet peering or global VNet peering for connectivity).|Typically used for services within the _same region_ as the VNet for optimal routing.|
-|**Supported Services**|Broad range of Azure PaaS services (Storage, SQL DB, Key Vault, Cosmos DB, etc.), as well as your own Private Link services.|Specific set of Azure PaaS services (Storage, SQL DB, Cosmos DB, Key Vault, Service Bus, Event Hubs, etc.).|
-|**Traffic Path**|Private link on Microsoft backbone.|Optimized route on Microsoft backbone.|
+| Feature                      | Azure Private Endpoint                                                                                                       | Azure Service Endpoint                                                                                      |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Connectivity Model**       | Private IP from VNet assigned to service; service appears _within_ VNet.                                                     | Extends VNet identity to service; traffic over backbone; service retains public IP.                         |
+| **IP Address Usage**         | Consumes a private IP address from your VNet.                                                                                | Does not consume private IP addresses from your VNet.                                                       |
+| **DNS Resolution**           | Requires Private DNS Zone (or custom DNS) to resolve service FQDN to private IP.                                             | Service FQDN resolves to its public IP; no special DNS configuration needed.                                |
+| **Public Internet Exposure** | Eliminates public internet exposure for the service.                                                                         | Traffic still uses public IP but travels optimized routes within Azure. Service ACLs control access.        |
+| **Data Exfiltration**        | Provides strong data exfiltration protection by ensuring traffic stays within VNet.                                          | Offers some exfiltration protection by restricting source networks, but service still has a public IP.      |
+| **Management Complexity**    | More complex to set up due to Private DNS Zone integration and IP management.                                                | Simpler setup; just enable on subnet and configure service firewall rules.                                  |
+| **Cost**                     | Incurs costs for the Private Endpoint resource itself.                                                                       | No direct cost for the Service Endpoint feature; only underlying network traffic costs.                     |
+| **Cross-Region Access**      | Can connect to services in _different regions_ (requires VNet peering or global VNet peering for connectivity).              | Typically used for services within the _same region_ as the VNet for optimal routing.                       |
+| **Supported Services**       | Broad range of Azure PaaS services (Storage, SQL DB, Key Vault, Cosmos DB, etc.), as well as your own Private Link services. | Specific set of Azure PaaS services (Storage, SQL DB, Cosmos DB, Key Vault, Service Bus, Event Hubs, etc.). |
+| **Traffic Path**             | Private link on Microsoft backbone.                                                                                          | Optimized route on Microsoft backbone.                                                                      |
 

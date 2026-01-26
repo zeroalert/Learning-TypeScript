@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Deploying Azure Private Endpoints and Service Endpoints.md",
+                "file": "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Creating reusable Pulumi components with TypeScript.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Deploying Azure Private Endpoints and Service Endpoints"
+              "title": "Creating reusable Pulumi components with TypeScript"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Deploying Azure Private Endpoints and Service Endpoints.md",
+                "file": "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Cross-region deployments and disaster recovery strategies.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for Deploying Azure Private Endpoints and Service Endpoints"
+              "title": "Backlinks for Cross-region deployments and disaster recovery strategies"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Deploying Azure Private Endpoints and Service Endpoints.md",
+                "file": "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Cross-region deployments and disaster recovery strategies.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from Deploying Azure Private Endpoints and Service Endpoints"
+              "title": "Outgoing links from Cross-region deployments and disaster recovery strategies"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Deploying Azure Private Endpoints and Service Endpoints.md",
+                "file": "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Cross-region deployments and disaster recovery strategies.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of Deploying Azure Private Endpoints and Service Endpoints"
+              "title": "Outline of Cross-region deployments and disaster recovery strategies"
             }
           }
         ]
@@ -185,13 +185,27 @@
   },
   "active": "c9a77cb33a1284f5",
   "lastOpenFiles": [
-    "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Integrating Azure Active Directory for identity management.md",
+    "AppServiceComponent.ts",
+    "SqlDatabaseComponent.ts",
+    "VnetComponent.ts",
+    "StandardStorageAccount.ts",
+    "testindex.ts",
+    "Untitled.md",
+    "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Creating reusable Pulumi components with TypeScript.md",
+    "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Refreshing and cleaning up Pulumi deployments.md",
+    "Untitled",
+    "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Importing existing Azure resources into Pulumi.md",
+    "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Working with Pulumi stacks for different environments (dev, test, prod).md",
+    "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Using Pulumi configuration for dynamic environment settings.md",
+    "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Encrypting and managing secrets with Pulumi configuration.md",
+    "README.md",
+    "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Understanding Pulumi's state backend options (Azure Blob, S3, Pulumi Service).md",
+    "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Cross-region deployments and disaster recovery strategies.md",
     "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Deploying Azure Private Endpoints and Service Endpoints.md",
+    "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Integrating Azure Active Directory for identity management.md",
     "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Managing Azure Key Vault for secrets and certificates.md",
     "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Configuring Azure Firewall and Network Security Groups (NSGs).md",
     "Untited",
-    "Untitled.md",
-    "README.md",
     "node_modules/@pulumi/kubernetes/README.md",
     "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Configuring Azure Virtual Networks and Subnets.md",
     "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Best practices for structuring your Pulumi Azure projects.md",
@@ -203,9 +217,6 @@
     "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Introducing Pulumi Declarative IaC with real programming languages.md",
     "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Implementing Azure Load Balancers and Application Gateways.md",
     "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Implementing Azure App Services for web applications.md",
-    "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Exploring the Pulumi CLI and its essential commands.md",
-    "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Deploying Azure Storage Accounts with TypeScript.md",
-    "Azure Pulumi with TypeScript Infrastructure as Code Mastery/Creating and managing Azure Virtual Machines (VMs).md",
     "Azure Pulumi with TypeScript Infrastructure as Code Mastery"
   ]
 }

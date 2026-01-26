@@ -1,6 +1,10 @@
 import * as azure from "@pulumi/azure";
 import * as azure_native from "@pulumi/azure-native";
 import { tenantId } from "@pulumi/azure/config";
+import { AppServiceComponent } from "./AppServiceComponent";
+import { SqlDatabaseComponent } from "./SqlDatabaseComponent";
+import { VnetComponent } from "./VnetComponent";
+import { StandardStorageAccount } from "./StandardStorageAccount"; // Assuming the component is in this file
 import * as pulumi from "@pulumi/pulumi";
 
 // Configuration for our app
@@ -9,6 +13,7 @@ const location = "East US";
 const appServiceName = "my-webapp-example"; // name of the app service
 const appServicePlanName = "my-appservice-plan"; // app serivce name plan 
 const appInsightName = "my-appinsights-ai";
+const config = new pulumi.Config();
 
 const resourceGroup = new azure_native.resources.ResourceGroup(resourceGroupName,{
     resourceGroupName: resourceGroupName,
@@ -376,8 +381,46 @@ const keyVault = new azure_native.keyvault.Vault("myKeyVault",{
     },
 });
 
+// Deploy two instances of our custom storage account component
+const webappStorage = new StandardStorageAccount("webAppStorage",{
+  resourceGroupName: resourceGroup.name,
+  location: resourceGroup.location,
+  namePrefix: "webaaplogs", // Example Prefix
+}, {dependsOn: [resourceGroup]});
+
+const databaseBackupStorage = new StandardStorageAccount("dbBackupStorage",{
+  resourceGroupName: resourceGroup.name,
+  location: resourceGroup.location,
+  namePrefix: "dbbkup", // Example Prefix
+}, { dependsOn: [resourceGroup]});
+
+// Deploy Network Layer
+const network = new VnetComponent("app-network",{
+    resourceGroupName: resourceGroup.name,
+    location: resourceGroup.location,
+    vnetAddressSpace: ["10.0.0.0/16"],
+    appSubnetAddressPrefix: "10.0.1.0/24",
+    dbSubnetAddressPrefix: "10.0.2.0/24",
+}, { dependsOn: [resourceGroup] });
+
+const dbPassword = config.requireSecret("sqlAdminPassword");
+
+const database = new SqlDatabaseComponent("app-database",{
+    resourecGroupName: resourceGroup.name,
+    location: resourceGroup.location,
+    subnetId: network.dbSubnetId,
+    adminLogin: "pulumiadmin",
+    adminPassword: dbPassword,
+}, { dependsOn: [network] });
 
 
+
+// Export key outputs
+export const appServiceUrl = pulumi.interpolate`https://${appService.defaultHostName}`;
+export const webAppStorageName = webappStorage.storageAccountName;
+export const webAppBlobEndpoint = webappStorage.primaryBlobEndpoint;
+export const dbBackupStorageName = databaseBackupStorage.storageAccountName;
+export const dbBackupBlobEndpoint = databaseBackupStorage.primaryBlobEndpoint;
 export const keyVaultUri = keyVault.properties.vaultUri;
 export const redisCacheHostname = redisCache.hostName;
 export const redisCachePrimaryConnectionString = redisCache.accessKeys;
